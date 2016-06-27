@@ -19,13 +19,18 @@ public class MyHashMap<K, V> extends MyBetterMap<K, V> implements Map<K, V> {
 	
 	// average number of entries per map before we rehash
 	protected static final double FACTOR = 1.0;
-	private double k = 1.0;
+
+	private int size = 0;
+
+	@Override
+	public void clear() {
+		super.clear();
+		size = 0;
+	}
 
 	@Override
 	public V put(K key, V value) {
 		V oldValue = super.put(key, value);
-		
-		System.out.println("Put " + key + " in " + maps + " size now " + maps.size());
 		
 		// check if the number of elements per map exceeds the threshold
 		if (size() > maps.size() * FACTOR) {
@@ -41,11 +46,14 @@ public class MyHashMap<K, V> extends MyBetterMap<K, V> implements Map<K, V> {
 	 * 
 	 */
 	protected void rehash() {
-        ArrayList<K, V> allEntries = (MyLinearMap) map.getEntries();
-        //maps.makeMaps(k * 2);
-        k = k * 2;
+        List<MyLinearMap<K, V>> allEntries = maps;
+        makeMaps(2*maps.size());
 
-        // throw new UnsupportedOperationException();
+        for (MyLinearMap<K,V> map : allEntries) {
+        	for (Map.Entry<K,V> entry : map.getEntries()) {
+        		put(entry.getKey(), entry.getValue());
+        	}
+        }
 	}
 
 	/**
@@ -57,6 +65,6 @@ public class MyHashMap<K, V> extends MyBetterMap<K, V> implements Map<K, V> {
 			map.put(new Integer(i).toString(), i);
 		}
 		Integer value = map.get("3");
-		System.out.println(value);
+		//System.out.println(value);
 	}
 }
